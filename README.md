@@ -31,7 +31,6 @@ If you find this repository useful, please cite the following:
   title = {MICCAI2024-ZeroShotCXR},
   year = {2024},
   howpublished = {\url{https://github.com/Glourier/MICCAI2024-ZeroShotCXR}},
-  note = {Accessed on: September 27, 2024}
 }
 ```
 
