@@ -5,18 +5,15 @@
 import os
 import pdb
 import argparse
-import pandas as pd
-
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.strategies import DDPStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
-
 import dataset
 import utils.ops as ops
 import utils.utils as utils
-from arch.vit_mv_rad import ViT_MV  # TODO: merge with ViT_MV
+from arch.vit_mv import ViT_MV
 
 
 def parseargs():
@@ -115,7 +112,7 @@ def freeze_params(model, freeze_encoder):
 
 
 def main(args):
-    ## Setup
+    # Setup
     model_dir, logger = set_up(args)
     if args.class_name is not None:
         class_names = [args.class_name]
@@ -138,7 +135,7 @@ def main(args):
                    weight_decay=args.weight_decay, criterion=ops.get_criterion(args.loss, n_classes=n_classes),
                    steps_per_epoch=steps_per_epoch,
                    with_lora=args.lora, lora_rank=args.lora_rank, save_dir=model_dir, max_views=args.max_views,
-                   n_heads=args.n_heads, n_layers=args.n_layers, dropout=args.dropout, backbone=args.backbone)
+                   n_heads=args.n_heads, n_layers=args.n_layers, dropout=args.dropout)
 
     if args.ckpt_path is not None:
         ckpt = torch.load(args.ckpt_path, map_location=lambda storage, loc: storage)
@@ -162,13 +159,10 @@ def main(args):
                          enable_model_summary=True,
                          logger=logger,
                          callbacks=[lr_monitor, ckpt_callback],
-                         accelerator="auto",  # gpu
-                         # strategy="ddp",  # DDP is default
-                         # distributed_backend='ddp',
+                         accelerator="auto",
                          strategy=DDPStrategy(find_unused_parameters=True),
                          precision='16-mixed',
-                         # check_val_every_n_epoch=1,  # Currently not support float
-                         val_check_interval=args.n_val,  # val every 0.5 epoch
+                         val_check_interval=args.n_val,
                          accumulate_grad_batches=args.accum_grad_batches,
                          gradient_clip_val=args.grad_clip)
 
@@ -176,7 +170,6 @@ def main(args):
         logger.experiment.config.update(vars(args))
 
     trainer.fit(model, train_loader, val_loader)
-    # trainer.fit(model, train_loader, val_loader, ckpt_path=args.ckpt_path)
 
 
 if __name__ == "__main__":

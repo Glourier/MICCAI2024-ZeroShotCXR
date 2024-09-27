@@ -2,16 +2,12 @@
 # 2024-07-02 by xtc
 
 import os
-import pdb
 import argparse
-import pandas as pd
-
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.strategies import DDPStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
-
 import dataset
 import utils.ops as ops
 import utils.utils as utils
@@ -128,13 +124,10 @@ def main(args):
                          enable_model_summary=True,
                          logger=logger,
                          callbacks=[lr_monitor, ckpt_callback],
-                         accelerator="auto",  # gpu
-                         # strategy="ddp",  # DDP is default  # TODO: set seeds for DDP
-                         # distributed_backend='ddp',
+                         accelerator="auto",
                          strategy=DDPStrategy(find_unused_parameters=True),
                          precision='16-mixed',
-                         # check_val_every_n_epoch=1,  # Currently not support float
-                         val_check_interval=args.n_val,  # val every 0.5 epoch
+                         val_check_interval=args.n_val,
                          accumulate_grad_batches=args.accum_grad_batches)
 
     if trainer.global_rank == 0:

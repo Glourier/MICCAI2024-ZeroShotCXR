@@ -2,15 +2,12 @@
 # 2024-07-02 by xtc
 
 import os
-import pdb
 import random
 import argparse
 import pandas as pd
 from tqdm import tqdm
-
 import torch
 import pytorch_lightning as pl
-
 import dataset_vlm as dataset
 import utils.ops as ops
 import utils.utils as utils
@@ -70,7 +67,7 @@ def set_up(args):
 
 
 def main(args):
-    ## Setup
+    # Setup
     model_dir = set_up(args)
     if args.class_name is not None:
         class_names_pred = [args.class_name]

@@ -79,7 +79,6 @@ class ViT(LightningModule):
         self.set_forward_function()
 
         # Hyperparameters
-        # self.vit.config.image_size = 1024
         self.lr = lr
         self.weight_decay = weight_decay
         self.epochs = epochs
@@ -148,12 +147,6 @@ class ViT(LightningModule):
         self.log('train/loss', loss, on_step=True, on_epoch=True, prog_bar=True)
         self.log('train/f1', f1, on_step=True, on_epoch=True, prog_bar=True)
         self.log('train/map', ap, on_step=True, on_epoch=True, prog_bar=True)
-
-        # Print for debugging
-        # print(f"labels: {labels}")
-        # print(f"preds: {preds}")
-        # print(f"loss: {loss}, f1: {f1}, map: {ap}")
-
         return loss
 
     def validation_step(self, batch, batch_idx):

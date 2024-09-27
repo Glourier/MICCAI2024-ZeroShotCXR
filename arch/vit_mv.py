@@ -139,11 +139,6 @@ class ViT_MV(LightningModule):
         self.log('train/loss', loss, on_step=True, on_epoch=True, prog_bar=True)
         self.log('train/f1', f1, on_step=True, on_epoch=True, prog_bar=True)
         self.log('train/map', ap, on_step=True, on_epoch=True, prog_bar=True)
-
-        # print(f"labels: {labels}")
-        # print(f"preds: {preds}")
-        # print(f"loss: {loss}, f1: {f1}, map: {ap}")
-
         return loss
 
     def validation_step(self, batch, batch_idx):

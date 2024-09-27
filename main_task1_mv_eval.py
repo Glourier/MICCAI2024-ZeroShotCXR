@@ -3,16 +3,12 @@
 # 2024-07-17 by xtc
 
 import os
-import pdb
 import random
 import argparse
 import pandas as pd
 from tqdm import tqdm
-
 import torch
 import pytorch_lightning as pl
-from pytorch_lightning.plugins import MixedPrecisionPlugin
-
 import dataset
 import utils.ops as ops
 import utils.utils as utils
@@ -24,7 +20,7 @@ def parseargs():
     parser.add_argument('--data_dir', type=str, default='data/MIMIC/task1_development_starting_kit')
     parser.add_argument('--csv_file', type=str, default='development.csv')
     parser.add_argument('--img_dir', type=str, default='data/mimic-cxr-jpg/2.0.0')
-    parser.add_argument('--names_file', type=str, default='CLASSES.txt')  # Or 'CLASSES_45.txt'
+    parser.add_argument('--names_file', type=str, default='CLASSES_45.txt')
     parser.add_argument('--batch_size', '-bs', type=int, default=32)
     parser.add_argument('--model_url', type=str, default='google/vit-base-patch16-224-in21k')
     parser.add_argument('--ckpt_path', type=str,
@@ -74,7 +70,7 @@ def set_up(args):
 
 
 def main(args):
-    ## Setup
+    # Setup
     model_dir = set_up(args)
     if args.class_name is not None:
         class_names_train = [args.class_name]
@@ -85,7 +81,6 @@ def main(args):
 
     n_classes = len(class_names_train)
     pl.seed_everything(args.seed, workers=True)
-    # torch.set_float32_matmul_precision('high')  # Added
 
     # Load dataset
     data_loader = dataset.InferenceDataModule_MV(data_dir=args.data_dir, csv_file=args.csv_file, img_dir=args.img_dir,
@@ -101,12 +96,10 @@ def main(args):
                                         n_layers=args.n_layers, dropout=args.dropout)
     model.eval()
     print(f"Loaded checkpoint from {args.ckpt_path}")
-    # precision_plugin = MixedPrecisionPlugin(precision=16)  # Added
 
     all_names = []
     all_probs = []
     with torch.no_grad():
-        # with precision_plugin.model_sharded_context():  # Added
         for batch in tqdm(test_loader):
             images, image_masks, study_ids = batch['images'], batch['image_masks'], batch['study_ids']
             images = images.to(model.device)

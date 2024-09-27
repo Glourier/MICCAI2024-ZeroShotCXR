@@ -3,15 +3,12 @@
 # 2024-07-04 by xtc
 
 import os
-import pdb
 import random
 import argparse
 import pandas as pd
 from tqdm import tqdm
-
 import torch
 import pytorch_lightning as pl
-
 import dataset
 import utils.ops as ops
 import utils.utils as utils
@@ -23,7 +20,7 @@ def parseargs():
     parser.add_argument('--data_dir', type=str, default='data/MIMIC/task1_development_starting_kit')
     parser.add_argument('--csv_file', type=str, default='development.csv')
     parser.add_argument('--img_dir', type=str, default='data/mimic-cxr-jpg/2.0.0')
-    parser.add_argument('--names_file', type=str, default='CLASSES.txt')  # Or 'CLASSES_45.txt'
+    parser.add_argument('--names_file', type=str, default='CLASSES_45.txt')
     parser.add_argument('--batch_size', '-bs', type=int, default=32)
     parser.add_argument('--model_url', type=str, default='google/vit-base-patch16-224-in21k')
     parser.add_argument('--n_classes', type=int, default=10)
@@ -70,7 +67,7 @@ def set_up(args):
 
 
 def main(args):
-    ## Setup
+    # Setup
     model_dir = set_up(args)
     if args.class_name is not None:
         class_names_train = [args.class_name]

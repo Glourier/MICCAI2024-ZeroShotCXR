@@ -5,15 +5,14 @@
 import os
 import torch
 import torch.nn as nn
-from transformers import ViTModel
 from pytorch_lightning import LightningModule
 from torchmetrics.classification import F1Score, AveragePrecision
 from transformers import BertModel
-import peft
 from peft import get_peft_model, LoraConfig
 import pandas as pd
 from itertools import chain
 from utils import utils as utils
+
 
 def apply_lora(model, rank=4, target_modules=None):
     lora_config = LoraConfig(
@@ -44,13 +43,6 @@ class VLM(LightningModule):
                  steps_per_epoch=None, lr=1e-5, weight_decay=1e-5,
                  criterion=None, with_lora=False, lora_rank=4, save_dir=None):
         super().__init__()
-        # # Vision choice 1: ViT
-        # self.vit = ViTModel.from_pretrained(model_url_vision)
-        # if with_lora:
-        #     self.vit = apply_lora_to_model(self.vit, model_name='vit', rank=lora_rank)
-        # self.vit_mapping = nn.Linear(in_features=self.vit.config.hidden_size, out_features=hidden_dim, bias=True)
-
-        # Vision choice 2: Dino-v2
         self.vit = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14_reg')
         self.vit_mapping = nn.Linear(in_features=self.vit.embed_dim, out_features=hidden_dim, bias=True)
         self.bert = BertModel.from_pretrained(model_url_language)
@@ -64,9 +56,7 @@ class VLM(LightningModule):
             self.vit = apply_lora_to_model(self.vit, model_name='dino', rank=lora_rank)
             self.bert = apply_lora_to_model(self.bert, model_name='bert', rank=lora_rank)
 
-
         # Hyperparameters
-        # self.vit.config.image_size = 1024
         self.lr = lr
         self.weight_decay = weight_decay
         self.epochs = epochs
@@ -83,11 +73,6 @@ class VLM(LightningModule):
         self.val_outputs = []
 
     def forward(self, images, input_ids, attention_mask):
-        # # Version 1: ViT
-        # img_features = self.vit(images).last_hidden_state[:, 0, :]  # Or use the pooled_output: outputs[1]
-        # img_features = self.vit_mapping(img_features)
-
-        # Version 2: Dino-v2
         img_features = self.vit(images)
         img_features = self.vit_mapping(img_features)
 
@@ -97,8 +82,6 @@ class VLM(LightningModule):
 
         features = torch.cat([img_features, lang_features], dim=1)
         logits = self.connector(features)
-
-
         return logits
 
     def training_step(self, batch, batch_idx):
@@ -119,11 +102,6 @@ class VLM(LightningModule):
         self.log('train/loss', loss, on_step=True, on_epoch=True, prog_bar=True)
         self.log('train/f1', f1, on_step=True, on_epoch=True, prog_bar=True)
         self.log('train/map', ap, on_step=True, on_epoch=True, prog_bar=True)
-
-        # print(f"labels: {labels}")
-        # print(f"preds: {preds}")
-        # print(f"loss: {loss}, f1: {f1}, map: {ap}")
-
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -154,6 +132,7 @@ class VLM(LightningModule):
         self.val_outputs = []
 
     # def configure_optimizers(self):
+    #     # With warmup
     #     optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
     #     total_steps = self.epochs * self.steps_per_epoch
     #     warmup_steps = 0.1 * total_steps
@@ -176,8 +155,8 @@ class VLM(LightningModule):
     #     }
     #     return [optimizer], [scheduler]
 
-
     def configure_optimizers(self):
+        # No warmup
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         total_steps = self.epochs * self.steps_per_epoch
         scheduler = {
@@ -186,13 +165,8 @@ class VLM(LightningModule):
             'frequency': 1,
             'name': 'learning_rate'
         }
-        # TODO: add get_cosine_schedule_with_warmup?
 
         return [optimizer], [scheduler]
-
-    # def check_trainable_params(self):
-    #     for name, param in self.named_parameters():
-    #         print(f"{name} is {'frozen' if not param.requires_grad else 'unfrozen'}.")
 
 
 def save_probs(dicom_ids, texts, probs, labels, file_name):

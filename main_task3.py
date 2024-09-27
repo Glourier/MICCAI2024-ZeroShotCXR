@@ -4,14 +4,11 @@
 import os
 import pdb
 import argparse
-import pandas as pd
-
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.strategies import DDPStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
-
 import dataset_vlm as dataset
 import utils.ops as ops
 import utils.utils as utils
@@ -40,7 +37,6 @@ def parseargs():
     parser.add_argument('--accum_grad_batches', '-acc', type=int, default=4)
     parser.add_argument('--lora_rank', '-rank', type=int, default=4)
     parser.add_argument('--lr_T', type=float, default=1.0, help='Number of circles of lr_scheduler.')
-    parser.add_argument('--dataset', type=str, default='lt', help='Which dataset to use. Choose from [lt, hier]')
     parser.add_argument('--fold', type=int, default=None, help='Fold index for cross-validation.')
 
     # Usually default hyperparams
@@ -77,25 +73,17 @@ def set_up(args):
 
 
 def main(args):
-    ## Setup
+    # Setup
     model_dir, logger = set_up(args)
     class_names = ops.read_txt(args.data_dir, args.names_file)
     pl.seed_everything(args.seed, workers=True)
 
     # Load dataset
-    if args.dataset == 'lt':
-        data_loader = dataset.VLDataModule(data_dir=args.data_dir, csv_file=args.csv_file, img_dir=args.img_dir,
-                                           tokenizer_url=args.model_url_lang,
-                                           class_names=class_names, batch_size=args.batch_size, img_size=args.img_size,
-                                           desc_file=args.desc_file,
-                                           seed=args.seed)
-    elif args.dataset == 'hier':
-        data_loader = dataset.HierarchyDataModule(data_dir=args.data_dir, csv_file=args.csv_file, img_dir=args.img_dir,
-                                                  tokenizer_url=args.model_url_lang,
-                                                  class_names=class_names, batch_size=args.batch_size,
-                                                  img_size=args.img_size, seed=args.seed)
-    else:
-        raise ValueError(f"Unknown dataset type: {args.dataset}")
+    data_loader = dataset.VLDataModule(data_dir=args.data_dir, csv_file=args.csv_file, img_dir=args.img_dir,
+                                       tokenizer_url=args.model_url_lang,
+                                       class_names=class_names, batch_size=args.batch_size, img_size=args.img_size,
+                                       desc_file=args.desc_file,
+                                       seed=args.seed)
     data_loader.setup(fold_idx=args.fold)
     train_loader, val_loader = data_loader.train_dataloader(), data_loader.val_dataloader()
 
@@ -110,7 +98,7 @@ def main(args):
     if args.ckpt_path is not None:
         ckpt = torch.load(args.ckpt_path, map_location=lambda storage, loc: storage)
         model.load_state_dict(ckpt['state_dict'])
-        print(f"Loaded model's state_dict from {args.ckpt_path}. Restart training...")
+        print(f"Loaded model's state_dict from {args.ckpt_path}")
 
     lr_monitor = LearningRateMonitor(logging_interval='step')
     ckpt_callback = ModelCheckpoint(monitor='val/map_epoch', mode='max', save_top_k=3, save_last=True, verbose=True,
@@ -123,19 +111,16 @@ def main(args):
                          enable_model_summary=True,
                          logger=logger,
                          callbacks=[lr_monitor, ckpt_callback],
-                         accelerator="auto",  # gpu
-                         # strategy="ddp",  # DDP is default  # TODO: set seeds for DDP
-                         # distributed_backend='ddp',
+                         accelerator="auto",
                          strategy=DDPStrategy(find_unused_parameters=True),
                          precision='16-mixed',
-                         check_val_every_n_epoch=1,  # Currently not support float
+                         check_val_every_n_epoch=1,
                          accumulate_grad_batches=args.accum_grad_batches)
 
     if trainer.global_rank == 0:
         logger.experiment.config.update(vars(args))
 
     trainer.fit(model, train_loader, val_loader)
-    # trainer.fit(model, train_loader, val_loader, ckpt_path=args.ckpt_path)
 
 
 if __name__ == "__main__":
