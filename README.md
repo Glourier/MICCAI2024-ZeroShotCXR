@@ -1,15 +1,26 @@
-# MICCAI2024 Challenge MIMIC-CXR-LT
-+ This is the repository of MICCAI 2024 Challenge: MIMIC-CXR-LT.
+# MICCAI2024 Challenge CXR-LT
++ This is the repository of MICCAI 2024 Challenge: CXR-LT.
++ Winner solution of Task3: zero-shot classification.  
 
 ## References
-+ Website: https://bionlplab.github.io/2024_MICCAI_CXRLT/
-+ Official page of the challenge on CodaLab: https://codalab.lisn.upsaclay.fr/
-+ Call for participant: https://groups.google.com/g/codalab-competitions/c/RfX5SvklQW8
++ Website of the challenge: https://bionlplab.github.io/2024_MICCAI_CXRLT/
++ Task3 on CodaLab: https://codalab.lisn.upsaclay.fr/competitions/18604
+
+## Usage
++ Training vision-language model: 
+``
 
 
-## Timeline
-+ Release of training data: 2024-05-01
-+ Sign up for the competition: 2024-06-23
-+ Release of test data: 2024-08-01
-+ Test close: 2024-08-04
+
+## Citation
+If you find this repository useful, please cite the following:
+```
+@misc{MICCAI2024-ZeroShotCXR,
+  author = {Yuyan Ge},
+  title = {MICCAI2024-ZeroShotCXR},
+  year = {2024},
+  howpublished = {\url{https://github.com/Glourier/MICCAI2024-ZeroShotCXR}},
+  note = {Accessed on: September 27, 2024}
+}
+```
 
