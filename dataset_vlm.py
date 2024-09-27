@@ -6,7 +6,6 @@ import random
 import numpy as np
 import pandas as pd
 from PIL import Image
-
 import torch
 from torch.utils.data import Dataset, Subset, ConcatDataset, DataLoader
 from pytorch_lightning import LightningDataModule
@@ -14,8 +13,6 @@ from sklearn.model_selection import train_test_split, KFold
 from transformers import AutoTokenizer, DataCollatorWithPadding
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-from torch.nn.utils.rnn import pad_sequence
-from torch.utils.data.sampler import WeightedRandomSampler
 
 
 def get_transforms(img_size=224):  # TODO: increase img_size to 1024
@@ -259,7 +256,8 @@ class UnifiedDataModule(LightningDataModule):
         self.val_dataset = val_lt
 
         print(f"Loaded {len(self.train_dataset)} training samples, {len(self.val_dataset)} validation samples.")
-        print(f"Training samples consists of {len(train_hash2)} hash2, {len(train_facts)} facts, {len(train_label93)} label93, {len(train_lt)} LT.")
+        print(
+            f"Training samples consists of {len(train_hash2)} hash2, {len(train_facts)} facts, {len(train_label93)} label93, {len(train_lt)} LT.")
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=8,
@@ -396,4 +394,3 @@ class Label93Dataset(Dataset):
             image = augmented['image']
 
         return image, text, label, study['dicom_id']
-

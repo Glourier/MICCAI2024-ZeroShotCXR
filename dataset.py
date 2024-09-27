@@ -136,10 +136,6 @@ class InferenceDataset(Dataset):
         name = study['dicom_id']
 
         if self.transform:
-            ## Augmentation 1
-            # image = self.transform(image)
-
-            ##  Augmentation 2
             image = np.array(image)
             augmented = self.transform(image=image)
             image = augmented['image']
@@ -203,8 +199,7 @@ class ImageDataModule_MV(LightningDataModule):
     def __init__(self, data_dir, csv_file, img_dir, class_names=None, class_name=None, batch_size=32, seed=0,
                  img_size=224, max_views=3):
         super().__init__()
-        # Balanced sampling of one class one epoch, iterate over all classes
-
+        # Balanced sampling of one class one epoch, iterate over all classes, if one class is specified
         self.data_dir = data_dir
         self.csv_file = csv_file
         self.img_dir = img_dir
