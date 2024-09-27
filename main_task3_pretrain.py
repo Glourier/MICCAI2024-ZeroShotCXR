@@ -25,9 +25,9 @@ def parseargs():
     parser.add_argument('--csv_file', type=str, default='train_labeled.csv')  # or 'train_labeled_45.csv'
     parser.add_argument('--img_dir', type=str, default='data/mimic-cxr-jpg/2.0.0')
     parser.add_argument('--names_file', type=str, default='CLASSES.txt')  # or 'CLASSES_45.txt'
-    parser.add_argument('--batch_size', '-bs', type=int, default=32)
+    parser.add_argument('--batch_size', '-bs', type=int, default=48)
     parser.add_argument('--epochs', type=int, default=100)
-    parser.add_argument('--lr', type=float, default=1e-4)
+    parser.add_argument('--lr', type=float, default=1e-5)
     parser.add_argument('--weight_decay', type=float, default=1e-5)
     parser.add_argument('--model_url_vision', type=str, default='google/vit-base-patch16-224-in21k')
     parser.add_argument('--model_url_lang', type=str, default='microsoft/BiomedVLP-CXR-BERT-specialized')
@@ -36,7 +36,7 @@ def parseargs():
     parser.add_argument('--lora', action='store_true', help='Whether to use LoRA.')
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--ckpt_path', type=str, default=None)
-    parser.add_argument('--img_size', type=int, default=224)
+    parser.add_argument('--img_size', type=int, default=504)
     parser.add_argument('--accum_grad_batches', '-acc', type=int, default=4)
     parser.add_argument('--lora_rank', '-rank', type=int, default=4)
 

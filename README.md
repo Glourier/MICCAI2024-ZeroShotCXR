@@ -2,14 +2,25 @@
 + This is the repository of MICCAI 2024 Challenge: CXR-LT.
 + Winner solution of Task3: zero-shot classification.  
 
-## References
+## 1 References
 + Website of the challenge: https://bionlplab.github.io/2024_MICCAI_CXRLT/
 + Task3 on CodaLab: https://codalab.lisn.upsaclay.fr/competitions/18604
 
-## Usage
-+ Training vision-language model: 
-``
+## 2 Model architecture
++ See [slides](https://drive.google.com/file/d/1WXnUmEPIVfNSS4DVCxxB5uSTVCXEtfrA/view?usp=sharing).
 
+## 3 Usage
+### 3.1 Train vision-language model:
++ Pretrain on unified dataset:
+  + `python main_task3_pretrain.py --lora`
++ Train on classification task: 
+  + `python main_task3.py --lora --ckpt_path saved/20240718_0002-Class-LT-16279-task3-baseline-pretrain-nghsg8mz/ckpt/best34.ckpt --desc_file description.csv`
+
+### 3.2 Train vision model: 
++ Single-view model to fientune the image encoder: 
+  + `python main_task1.py --lora`
++ Multi-view model with frozen image encoder:
+  + `python main_task1_mv.py --lora --ckpt_path saved/20240722_1142-Class-LT-16411-task1-baseline-5hjh936c/ckpt/best92.ckpt --freeze_encoder image`
 
 
 ## Citation
