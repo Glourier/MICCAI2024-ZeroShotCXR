@@ -1,6 +1,6 @@
 # Vision-language models for zero-shot multi-label fine-grained classification of chest X-ray images
 + This is the repository of MICCAI 2024 Challenge: CXR-LT.
-+ Winner solution of Task3: zero-shot classification.  
++ Winner solution for Task3: zero-shot classification.  
 
 ## 1 References
 + Website of the challenge: https://bionlplab.github.io/2024_MICCAI_CXRLT/
