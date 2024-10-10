@@ -7,7 +7,7 @@
 + Task3 on CodaLab: https://codalab.lisn.upsaclay.fr/competitions/18604
 
 ## 2 Model architecture
-+ See [slides](https://drive.google.com/file/d/1WXnUmEPIVfNSS4DVCxxB5uSTVCXEtfrA/view?usp=sharing).
++ See [slides](https://drive.google.com/file/d/1W2MBxnhVlsmL75_9zxyIiRRxeS49FoXQ/view?usp=sharing).
 
 ## 3 Usage
 ### 3.1 Train vision-language model:
