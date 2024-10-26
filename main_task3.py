@@ -87,8 +87,6 @@ def main(args):
     data_loader.setup(fold_idx=args.fold)
     train_loader, val_loader = data_loader.train_dataloader(), data_loader.val_dataloader()
 
-    pdb.set_trace()
-
     steps_per_epoch = len(train_loader) // (args.accum_grad_batches * torch.cuda.device_count() * args.lr_T)
     model = VLM(model_url_vision=args.model_url_vision, model_url_language=args.model_url_lang, n_classes=1,
                 epochs=args.epochs, lr=args.lr,

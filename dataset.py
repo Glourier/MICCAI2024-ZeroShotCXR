@@ -27,7 +27,7 @@ def get_transforms(img_size=224):
         A.CoarseDropout(max_holes=8, max_height=32, max_width=32, p=0.2),
         A.GaussianBlur(blur_limit=(3, 7), p=0.2),
         A.GaussNoise(var_limit=(10.0, 50.0), p=0.2),
-        A.Equalize(p=0.5),
+        # A.Equalize(p=0.5),
         A.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
         ToTensorV2()
     ])
