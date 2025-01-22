@@ -8,6 +8,8 @@
 
 ## 2 Model architecture
 + See [slides](https://drive.google.com/file/d/1czlTv7kdaZ3Z43NkCiBywU3fzbP9Pu_z/view?usp=sharing). (Updated: 2024-10-31) 
++ For detailed description, please see [report](https://drive.google.com/file/d/1jtI_4QFX4epmA7lQ9EVlWLx33pLtU1hI/view?usp=sharing). (Updated: 2024-11-24)
+
 
 ## 3 Usage
 ### 3.1 Train vision-language model:
